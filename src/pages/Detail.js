@@ -9,16 +9,20 @@ function Detail({userName, quizList}) {
   const _score = quizList.filter((e,i)=>{
     return e.answer === userAnswer[i]
   }).length
+  const currentPer = Math.floor(((current + 1) / quizList.length)*100)
   return (
     <>
       <div className="w-full flex items-center h-full">
-        <div className="mx-auto basis-11/12 lg:10/12 flex flex-wrap items-center">
-          <div className=""></div>
+        <div className="mx-auto basis-11/12 lg:10/12 flex flex-wrap items-center h-full">
           <div className="basis-full text-center">
             {
               current < quizList.length ? <>
                 
-               <h4 className="font-bold to-indigo-500 sm:text-2xl lg:text-3xl text-xl mb-5 bg-white rounded-lg p-5 border">{userName}님 반갑습니다.</h4>
+              <h4 className="font-bold to-indigo-500 sm:text-2xl lg:text-3xl text-xl mb-5 bg-white rounded-lg p-5 border">{userName}님 반갑습니다.</h4>
+              <div className="w-full h-5 bg-gray-50 rounded-full mb-5 relative">
+                <div className="absolute h-full bg-green-500 top-0 left-0 rounded-full transition-all duration-1000" style={{width: `${currentPer}%`}}></div>
+                <div className="absolute right-5 top-0 font-bold">{currentPer}%</div>
+              </div>
                 <div className="flex flex-wrap justify-between p-5 border rounded-lg bg-white">
                   <p>{quizList[current].question}</p>
                   <span>{current+1} / {quizList.length}문제</span>
@@ -32,9 +36,35 @@ function Detail({userName, quizList}) {
                   </ul>
                 </div>
               </> : 
-              <div>
-                <p className='text-lg'>총 <span className="font-bold text-indigo-500 text-xl">{quizList.length}</span>문제 중 <span className="font-bold text-indigo-500 text-xl">{_score}</span>문제를 맞추셨으며, 점수는 <span className="font-bold text-indigo-500 text-xl">{Math.floor((_score / quizList.length)*100)}</span></p>
-              </div>
+              <>
+                <div>
+                  <p className='text-lg'>총 <span className="font-bold text-indigo-500 text-xl">{quizList.length}</span>문제 중 <span className="font-bold text-indigo-500 text-xl">{_score}</span>문제를 맞추셨으며, 점수는 <span className="font-bold text-indigo-500 text-xl">{Math.floor((_score / quizList.length)*100)}</span></p>
+                  <p className='flex items-center mt-4'>
+                    정답맞춤 : <span className="bg-red-500 w-5 h-5 block mr-5 ml-2"></span>
+                    선택한답 : <span className="bg-indigo-500 w-5 h-5 block mr-5 ml-2"></span>
+                    오답일경우정답 : <span className="bg-indigo-300 w-5 h-5 block mr-5 ml-2"></span>
+                  </p>
+                  {/* 모든 문제 다출력 */}
+                </div>
+                {
+                  quizList.map((e,i)=>{
+                    return (
+                      <ul key={i} className='mt-5 bg-white rounded-2xl'>
+                        <li className="flex justify-between flex-wrap">
+                          <p className='bg-gray-50 font-bold basis-full border text-base py-4 rounded-lg}'>{e.question}</p>
+                          {
+                            Object.entries(e.view).map((el,index)=>{
+                              return (
+                                <p key={index} className={`font-bold mt-5 basis-[49.5%] border text-base py-4 rounded-lg ${e.answer === el[1] && userAnswer[i] === e.answer ? 'bg-orange-500' : e.answer === el[1] ? 'bg-indigo-300' : el[1] === userAnswer[i] ? 'bg-indigo-500' : 'bg-white'}`}>{el[1]}</p>
+                              )
+                            })
+                          }
+                        </li>
+                      </ul>
+                    )
+                  })
+                }
+              </>
             }
           </div>
         </div>
